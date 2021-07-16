@@ -7,20 +7,21 @@ import android.os.Bundle
 import android.widget.TextView
 import java.io.IOException
 
+
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         val home = findViewById<TextView>(R.id.home_title)
         home.setTypeface(Typeface.DEFAULT_BOLD,Typeface.BOLD)
-        Thread( Runnable {
+        Thread {
             try {
-                Thread.sleep(1000);
-                startActivity(Intent(this,Login::class.java))
+                Thread.sleep(1000)
+                startActivity(Intent(this, Login::class.java))
                 this.finish()
-            }catch (e: IOException){
+            } catch (e: IOException) {
                 e.printStackTrace()
             }
-        }).start()
+        }.start()
     }
 }

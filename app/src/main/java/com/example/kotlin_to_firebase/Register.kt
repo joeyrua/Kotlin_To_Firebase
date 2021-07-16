@@ -1,10 +1,7 @@
 package com.example.kotlin_to_firebase
 
-import android.content.ActivityNotFoundException
-import android.content.ContentResolver
+import android.annotation.SuppressLint
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.graphics.Bitmap
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -21,11 +18,9 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
-import org.w3c.dom.Text
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -158,8 +153,7 @@ class Register : AppCompatActivity() {
         }
     }
 
-
-
+    @SuppressLint("SimpleDateFormat")
     private fun createImageFile():File{//capture_2
         val timestamp:String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
         val storageDir:File = getExternalFilesDir(Environment.DIRECTORY_PICTURES)!!
@@ -173,6 +167,7 @@ class Register : AppCompatActivity() {
     }
 
 
+    @SuppressLint("QueryPermissionsNeeded")
     private fun dispatchTakePicture(){//capture_2
         Intent(MediaStore.ACTION_IMAGE_CAPTURE).also {
             takePictureIntent->
@@ -196,6 +191,7 @@ class Register : AppCompatActivity() {
         }
     }
 
+    @SuppressLint("SimpleDateFormat")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {//capture_3 and choose image_2
         super.onActivityResult(requestCode, resultCode, data)
         if(requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK){

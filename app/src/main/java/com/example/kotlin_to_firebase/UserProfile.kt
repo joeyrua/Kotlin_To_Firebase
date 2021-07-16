@@ -1,10 +1,13 @@
 package com.example.kotlin_to_firebase
 
+import android.content.DialogInterface
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.KeyEvent
 import android.widget.Button
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -25,6 +28,12 @@ class UserProfile : AppCompatActivity() {
     private lateinit var _Phone:String
     private lateinit var _email:String
     private lateinit var _password:String
+
+    val PositiveButton_Click = {
+        dialog: DialogInterface,which:Int->
+        System.exit(0)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_user_profile)
@@ -140,6 +149,24 @@ class UserProfile : AppCompatActivity() {
             return false
         }
     }
+
+    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        if(keyCode==KeyEvent.KEYCODE_BACK){
+            ConfirmExit()
+            return true
+        }
+        return super.onKeyDown(keyCode, event)
+    }
+
+    private fun ConfirmExit(){
+        val alertDialog = AlertDialog.Builder(this)
+        alertDialog.setMessage("你要離開嗎?")
+        alertDialog.setPositiveButton("是",PositiveButton_Click)
+        alertDialog.setNegativeButton("否",null)
+        alertDialog.setCancelable(false)
+        alertDialog.show()
+    }
+
 
 
 }

@@ -6,14 +6,23 @@ import android.content.Intent
 import android.net.ConnectivityManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.KeyEvent
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.SignInButton
+import com.google.android.gms.common.api.ApiException
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import java.io.IOException
 
 class Login : AppCompatActivity() {
     private lateinit var email: TextInputLayout
@@ -21,12 +30,16 @@ class Login : AppCompatActivity() {
     private lateinit var forget_password:Button
     private lateinit var register:Button
     private lateinit var ok:Button
+    private lateinit var googleSignIn:SignInButton//googleSignIn 按鈕不能使用Button，而是用SignInButton
+
     private lateinit var auth: FirebaseAuth
     private lateinit var reference: DatabaseReference
     val positiveButtonClick= {
         dialog: DialogInterface,which: Int->
         System.exit(0)
     }
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
@@ -106,6 +119,10 @@ class Login : AppCompatActivity() {
             return true
         }
     }
+
+
+
+
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
         if(keyCode==KeyEvent.KEYCODE_BACK){

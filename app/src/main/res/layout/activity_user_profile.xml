@@ -17,6 +17,26 @@
         android:textColor="#000fff"
         android:textSize="30dp" />
 
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:id="@+id/image_view_show"
+            android:layout_width="200dp"
+            android:layout_height="200dp"/>
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <Button
+                android:id="@+id/select_image"
+                android:text="選擇圖片"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+    </LinearLayout>
+
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/input_username_profile"
         android:hint="請輸入使用者姓名"

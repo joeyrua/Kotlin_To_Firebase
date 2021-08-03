@@ -34,12 +34,6 @@
                 android:text="選擇圖片"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
-            <Button
-                android:visibility="gone"
-                android:id="@+id/capture"
-                android:text="照相"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
         </LinearLayout>
     </LinearLayout>
 

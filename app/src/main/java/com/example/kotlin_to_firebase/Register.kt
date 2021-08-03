@@ -1,6 +1,6 @@
 package com.example.kotlin_to_firebase
 
-import android.annotation.SuppressLint
+
 import android.content.Intent
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
@@ -23,6 +23,7 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import java.io.File
 import java.io.IOException
+import java.net.URI
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -38,11 +39,10 @@ class Register : AppCompatActivity() {
     private lateinit var userID:String
     private lateinit var imageView: ImageView
     private lateinit var select_image_btn:Button
-    private lateinit var capture_btn:Button
     private lateinit var currentPhotoPah:String
+    private var contentUri: Uri?=null
     val REQUEST_IMAGE_CAPTURE = 110
     val Gallery_IMAGE_CODE = 120
-    private lateinit var contentUri:Uri
     private lateinit var storageReference: StorageReference
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,7 +55,6 @@ class Register : AppCompatActivity() {
         register =findViewById(R.id.Register_btn)
         imageView = findViewById(R.id.image_view)
         select_image_btn = findViewById(R.id.select_image)
-        capture_btn = findViewById(R.id.capture)
         auth = Firebase.auth
         storageReference = FirebaseStorage.getInstance().getReference("Images")
 
@@ -69,36 +68,39 @@ class Register : AppCompatActivity() {
         }
 
         register.setOnClickListener {
-            if(!username_vaild() or !phone_vaild() or !email_vaild() or !password_vaild()){
+            if(!username_vaild() or !phone_vaild() or !email_vaild() or !password_vaild() or !_Img() ){
                 return@setOnClickListener
             }
             val username:String = username.editText?.text.toString()
             val phone:String = phone.editText?.text.toString()
             val email:String = email.editText?.text.toString()
             val password:String = password.editText?.text.toString()
-            auth.createUserWithEmailAndPassword(email,password).addOnCompleteListener {
-                if(it.isSuccessful){
+            val timeStamp:String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+            val imageFilename:String = "JPEG_"+timeStamp+"."+getExtension(contentUri!!)
+
+            auth.createUserWithEmailAndPassword(email,password).addOnSuccessListener {
                     userID = auth.currentUser!!.uid
                     database = FirebaseDatabase.getInstance().getReference()
-                    val helper = UserHelper(username = username,phone = phone,email = email,password = password)
+                    val helper = UserHelper(username = username,phone = phone,email = email,password = password,ImgId = imageFilename)
                     database.child("users").child(userID).setValue(helper)
-                    register.isEnabled
-                    Toast.makeText(this,"註冊成功",Toast.LENGTH_SHORT).show()
-                    startActivity(Intent(this,UserProfile::class.java))
-                    finish()
-                }
-                else{
-                    Toast.makeText(this,"註冊失敗",Toast.LENGTH_SHORT).show()
-                }
+
+                    val image = storageReference.child(imageFilename)
+                    image.putFile(contentUri!!).addOnFailureListener{
+                        Toast.makeText(this,it.message,Toast.LENGTH_SHORT).show()
+                    }.addOnSuccessListener {
+                        Toast.makeText(this,"註冊成功",Toast.LENGTH_SHORT).show()
+                        startActivity(Intent(this,UserProfile::class.java))
+                        finish()
+                    }
+            }.addOnFailureListener{
+                Toast.makeText(this,it.message,Toast.LENGTH_SHORT).show()
             }
         }
         select_image_btn.setOnClickListener {
             val gallery = Intent(Intent.ACTION_PICK,MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
             startActivityForResult(gallery,Gallery_IMAGE_CODE)
         }
-        capture_btn.setOnClickListener {
-            dispatchTakePicture()
-        }
+
     }
 
     private  fun username_vaild():Boolean{
@@ -153,7 +155,21 @@ class Register : AppCompatActivity() {
         }
     }
 
-    @SuppressLint("SimpleDateFormat")
+    private fun _Img():Boolean{
+        if(contentUri==null){
+            Toast.makeText(this,"請務必選擇圖片喔!!!",Toast.LENGTH_SHORT).show()
+            return false
+        }else{
+            return true
+        }
+    }
+
+
+
+
+
+
+
     private fun createImageFile():File{//capture_2
         val timestamp:String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
         val storageDir:File = getExternalFilesDir(Environment.DIRECTORY_PICTURES)!!
@@ -167,10 +183,9 @@ class Register : AppCompatActivity() {
     }
 
 
-    @SuppressLint("QueryPermissionsNeeded")
     private fun dispatchTakePicture(){//capture_2
         Intent(MediaStore.ACTION_IMAGE_CAPTURE).also {
-            takePictureIntent->
+                takePictureIntent->
             takePictureIntent.resolveActivity(packageManager)?.also {
                 val photoFile:File?=try {
                     createImageFile()
@@ -191,7 +206,6 @@ class Register : AppCompatActivity() {
         }
     }
 
-    @SuppressLint("SimpleDateFormat")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {//capture_3 and choose image_2
         super.onActivityResult(requestCode, resultCode, data)
         if(requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK){
@@ -201,14 +215,13 @@ class Register : AppCompatActivity() {
             mediaScanIntent.setData(contentUri)
             this.sendBroadcast(mediaScanIntent)
             imageView.setImageURI(contentUri)
-            UploadImageToFirebase(f.name,contentUri)
+            //UploadImageToFirebase(f.name,contentUri)
         }
         else if(requestCode==Gallery_IMAGE_CODE && resultCode == RESULT_OK && data != null && data.data!=null){
             contentUri = data.data!!
-            val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
-            val imageFilename = "JPEG_"+timeStamp+"."+getExtension(contentUri)
+
             imageView.setImageURI(contentUri)
-            UploadImageToFirebase(imageFilename,contentUri)
+            //UploadImageToFirebase(imageFilename,contentUri)
         }
     }
 

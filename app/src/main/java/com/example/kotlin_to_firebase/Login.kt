@@ -30,8 +30,6 @@ class Login : AppCompatActivity() {
     private lateinit var forget_password:Button
     private lateinit var register:Button
     private lateinit var ok:Button
-    private lateinit var googleSignIn:SignInButton//googleSignIn 按鈕不能使用Button，而是用SignInButton
-
     private lateinit var auth: FirebaseAuth
     private lateinit var reference: DatabaseReference
     val positiveButtonClick= {

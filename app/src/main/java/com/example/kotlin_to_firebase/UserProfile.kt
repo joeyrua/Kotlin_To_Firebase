@@ -1,19 +1,23 @@
 package com.example.kotlin_to_firebase
 
 import android.content.ContentResolver
+import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
+import android.net.ConnectivityManager
+import android.net.Network
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.KeyEvent
+import android.view.View
 import android.webkit.MimeTypeMap
-import android.widget.Button
-import android.widget.Gallery
-import android.widget.ImageView
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.app.AlertDialog
+import androidx.core.view.isGone
+import androidx.core.view.isVisible
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.bumptech.glide.Glide
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.FirebaseAuth
@@ -42,9 +46,11 @@ class UserProfile : AppCompatActivity() {
     private lateinit var _password:String
     private lateinit var image:ImageView
     private lateinit var image_id:String
+    private lateinit var network: TextView
     private lateinit var storageReference: StorageReference
     private var contentUri:Uri?=null
     private val Gallery_Image_Code=120
+    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
 
     val PositiveButton_Click = {
         dialog: DialogInterface,which:Int->
@@ -62,13 +68,50 @@ class UserProfile : AppCompatActivity() {
         update = findViewById(R.id.Update_btn)
         image = findViewById(R.id.image_view_show)
         Select_Image = findViewById(R.id.select_image)
+        swipeRefreshLayout = findViewById(R.id.refresh_data)
+        network = findViewById(R.id.network_test)
         auth = FirebaseAuth.getInstance()
         user_id = auth.currentUser!!.uid
         database = FirebaseDatabase.getInstance().getReference("users")
         storageReference = FirebaseStorage.getInstance().getReference("Images/")
 
+        if(!isNetworkConnect()){
+            username.visibility = View.GONE
+            phone.visibility = View.GONE
+            email.visibility = View.GONE
+            password.visibility = View.GONE
+            update.visibility = View.GONE
+            logout.visibility = View.GONE
+            Select_Image.visibility = View.GONE
+            image.visibility = View.GONE
+            network.visibility = View.VISIBLE
 
-        showAllUserData()
+            return
+        }
+        else{
+            username.visibility = View.VISIBLE
+            phone.visibility = View.VISIBLE
+            email.visibility = View.VISIBLE
+            password.visibility = View.VISIBLE
+            update.visibility = View.VISIBLE
+            logout.visibility = View.VISIBLE
+            Select_Image.visibility = View.VISIBLE
+            image.visibility = View.VISIBLE
+            network.visibility = View.GONE
+            showAllUserData()
+        }
+
+        /*swipeRefreshLayout.setOnRefreshListener {
+            swipeRefreshLayout.isRefreshing=false
+            update.isClickable = true
+        }*/
+
+
+
+
+
+
+
 
         update.setOnClickListener {
             if (!isUsernameChange() or !isPhoneChange() or !isEmailChange() or !isPasswordChange() or !isImageChange()){
@@ -126,6 +169,7 @@ class UserProfile : AppCompatActivity() {
                         Glide.with(this@UserProfile)
                             .load(it)
                             .into(image)
+
                     }.addOnFailureListener{
                         Toast.makeText(this@UserProfile,"No Find Image",Toast.LENGTH_SHORT).show()
                       }
@@ -218,6 +262,22 @@ class UserProfile : AppCompatActivity() {
             Toast.makeText(this,"No Image Update",Toast.LENGTH_SHORT).show()
         }
         return false
+    }
+
+    private fun isNetworkConnect():Boolean{
+        val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkInfo = connectivityManager.getActiveNetworkInfo()
+        if(networkInfo != null && networkInfo.isConnected){
+            return true
+        }
+        else{
+            val alertDialog = AlertDialog.Builder(this)
+            alertDialog.setMessage("你網路沒有連線喔!!")
+            alertDialog.setPositiveButton("確定",null)
+            alertDialog.setCancelable(false)
+            alertDialog.show()
+            return false
+        }
     }
 
 

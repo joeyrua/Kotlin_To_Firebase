@@ -12,8 +12,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        val home = findViewById<TextView>(R.id.home_title)
-        home.setTypeface(Typeface.DEFAULT_BOLD,Typeface.BOLD)
         Thread {
             try {
                 Thread.sleep(1000)

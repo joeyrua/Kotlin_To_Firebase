@@ -48,6 +48,7 @@
     <Button
         android:id="@+id/forget_password_btn"
         android:text="forget apssword"
+        android:visibility="gone"
         android:layout_gravity="right"
         android:textColor="@color/black"
         android:background="#00000000"

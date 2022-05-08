@@ -49,21 +49,26 @@ class Login : AppCompatActivity() {
         auth = FirebaseAuth.getInstance()
         reference = FirebaseDatabase.getInstance().getReference("users")
 
+
         ok.setOnClickListener{
-            if(!email_vaild() or !password_vaild()){
+            if (!Network_Connect()){
                 return@setOnClickListener
-            }else{
-                auth.signInWithEmailAndPassword(email.editText?.text.toString(),password.editText?.text.toString()).addOnCompleteListener{
-                    if(it.isSuccessful){
-                        Toast.makeText(this,"Login Complete",Toast.LENGTH_SHORT).show()
-                        startActivity(Intent(this,UserProfile::class.java))
-                        finish()
-                    }
-                    else if(!Network_Connect()){
-                        return@addOnCompleteListener
+            }
+            else{
+                if(!email_vaild() or !password_vaild()){
+                    return@setOnClickListener
+                }else{
+                    auth.signInWithEmailAndPassword(email.editText?.text.toString(),password.editText?.text.toString()).addOnCompleteListener{
+                        if(it.isSuccessful){
+                            Toast.makeText(this,"Login Complete",Toast.LENGTH_SHORT).show()
+                            startActivity(Intent(this,UserProfile::class.java))
+                            finish()
+                        }
+
                     }
                 }
             }
+
         }
 
         register.setOnClickListener{
